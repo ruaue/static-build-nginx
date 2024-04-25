@@ -18,7 +18,7 @@ jobs:
     - name: git clone static build alpine
       run: |
         set -eux
-        apk --update add build-base musl-dev
+        apk --update add binutils
         apk add git
         git clone   https://github.com/ruaue/static-build-nginx
          
@@ -38,6 +38,8 @@ jobs:
         ls
         cd static-build-nginx
         bash nginx.sh
+        ls -lart /usr/sbin/nginx
+        strip /usr/sbin/nginx
 
     - name: setup fpm    
       run: |
@@ -47,8 +49,8 @@ jobs:
     - name: ls 
       run: |
          pwd
-         ls /usr/sbin/nginx
-         ldd usr/sbin/nginx
+         ls /usr/sbin/nginx -lart
+         ldd /usr/sbin/nginx
          
     - name: Upload release
       uses: softprops/action-gh-release@v0.1.15
