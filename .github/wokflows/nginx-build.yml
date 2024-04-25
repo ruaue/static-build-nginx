@@ -1,0 +1,55 @@
+name: webdav-server static build for musl-linux
+permissions:
+  contents: write
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: rust:alpine
+      env:
+        TZ: Asia/Shanghai
+      options: --privileged
+      
+    steps:
+
+    - name: git clone webdav-server-rs
+      run: |
+        set -eux
+        apk --update add build-base musl-dev
+        apk add git
+        git clone   https://github.com/ruaue/webdav-server-rs
+         
+         
+    - name: install linux-pam 
+      run: |
+       apk add rpcgen 
+       apk add portablexdr-dev       
+       apk add linux-pam
+       apk add linux-pam-dev
+    - name: setup rust target
+      run: |
+        rustup target add x86_64-unknown-linux-musl
+       
+    - name: build rust project 
+    #  working-directory:webdav-server-rs
+      run: |
+        set -eux
+        pwd
+
+        cd webdav-server-rs
+        RUSTFLAGS="-C link-arg=-s" cargo build  --target x86_64-unknown-linux-musl --release   --no-default-features --features=pam
+
+        
+    - name: ls 
+      run: |
+         pwd
+         ls webdav-server-rs/target/release
+    - name: Upload release
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+       tag_name: ${{ github.ref_name }}
+       files: |
+           webdav-server-rs/target/release/webdav-server
