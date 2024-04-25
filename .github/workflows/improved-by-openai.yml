@@ -19,7 +19,7 @@ jobs:
     - name: Execute Nginx build script
       run: |
         set -eux  
-        bash nginx_ai.sh
+        bash nginx-ai.sh
         
 
     - name: Strip Nginx binary
