@@ -29,6 +29,9 @@ jobs:
 
     - name: start build by script
       run: |
+        pwd
+        ls
+        cd static-build-nginx
         bash nginx.sh
 
     - name: setup fpm    
