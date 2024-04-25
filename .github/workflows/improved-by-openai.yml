@@ -19,6 +19,7 @@ jobs:
     - name: install bash
       run: |
        apk --update add bash
+       apk add curl
         
     - name: Execute Nginx build script
       run: |
