@@ -6,15 +6,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: 
+      image: ruby:alpine
+      env:
+        TZ: Asia/Shanghai
+      options: --privileged
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
       
-    - name: Set up Bash
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+    - name: install bash
+      run: |
+       apk --update add bash
         
     - name: Execute Nginx build script
       run: |
