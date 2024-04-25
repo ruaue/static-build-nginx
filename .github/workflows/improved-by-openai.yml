@@ -30,24 +30,12 @@ jobs:
     - name: Strip Nginx binary
       run: strip /usr/sbin/nginx
 
-    - name: Create release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.build.outputs.nginx_version }}
-        release_name: Release ${{ steps.build.outputs.nginx_version }}
-        draft: false
-        prerelease: false
+    
 
-    - name: Upload Nginx binary
-      id: upload-release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload release
+      uses: softprops/action-gh-release@v0.1.15
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: /usr/sbin/nginx
-        asset_name: nginx
-        asset_content_type: application/octet-stream
+       tag_name: ${{ github.ref_name }}
+       files: |
+           /usr/sbin/nginx
+      
