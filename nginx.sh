@@ -13,7 +13,7 @@ curl -sSL http://nginx.org/download/nginx-$VER_NGINX.tar.gz | tar xz -C /tmp
 curl -sSL http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-$VER_LIBERSSL.tar.gz | tar xz -C /tmp
 curl -sSL https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$VER_PCRE/pcre2-$VER_PCRE.tar.gz | tar xz -C /tmp
 curl -sSL http://zlib.net/zlib-$VER_ZLIB.tar.gz | tar xz -C /tmp
-curl -sSL https://github.com/aperezdc/ngx-fancyindex/releases/download/v0.5.2/ngx-fancyindex-0.5.2.tar.xz | tar xf -C /tmp
+#curl -sSL https://github.com/aperezdc/ngx-fancyindex/releases/download/v0.5.2/ngx-fancyindex-0.5.2.tar.xz | tar xf -C /tmp
 
 cd /tmp/nginx-$VER_NGINX/
     ./configure \
