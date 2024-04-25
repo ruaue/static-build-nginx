@@ -26,12 +26,14 @@ jobs:
     - name: install bash
       run: |
        apk --update add bash
+       
     - name: download ngxfancyindex 
       run: |
        wget -P /tmp https://github.com/aperezdc/ngx-fancyindex/releases/download/v0.5.2/ngx-fancyindex-0.5.2.tar.xz
        cd /tmp
        tar -xf ngx-fancyindex-0.5.2.tar.xz
        cd /
+       
     - name: start build by script
       run: |
         pwd
