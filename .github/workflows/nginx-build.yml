@@ -1,4 +1,4 @@
-name: webdav-server static build for musl-linux
+name: nginx static build
 permissions:
   contents: write
 on:
@@ -8,48 +8,43 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: 
-      image: rust:alpine
+      image: ruby:alpine
       env:
         TZ: Asia/Shanghai
       options: --privileged
       
     steps:
 
-    - name: git clone webdav-server-rs
+    - name: git clone static build alpine
       run: |
         set -eux
         apk --update add build-base musl-dev
         apk add git
-        git clone   https://github.com/ruaue/webdav-server-rs
+        git clone   https://github.com/ruaue/static-build-nginx
          
          
-    - name: install linux-pam 
+    - name: install bash
       run: |
-       apk add rpcgen 
-       apk add portablexdr-dev       
-       apk add linux-pam
-       apk add linux-pam-dev
-    - name: setup rust target
+       apk --update add bash
+
+    - name: start build by script
       run: |
-        rustup target add x86_64-unknown-linux-musl
+        bash nginx.sh
+
+    - name: setup fpm    
+      run: |
+       gem install fpm
+       fpm --version
        
-    - name: build rust project 
-    #  working-directory:webdav-server-rs
-      run: |
-        set -eux
-        pwd
-
-        cd webdav-server-rs
-        RUSTFLAGS="-C link-arg=-s" cargo build  --target x86_64-unknown-linux-musl --release   --no-default-features --features=pam
-
-        
     - name: ls 
       run: |
          pwd
-         ls webdav-server-rs/target/release
+         ls /usr/sbin/nginx
+         ldd usr/sbin/nginx
+         
     - name: Upload release
       uses: softprops/action-gh-release@v0.1.15
       with:
        tag_name: ${{ github.ref_name }}
        files: |
-           webdav-server-rs/target/release/webdav-server
+           /usr/sbin/nginx
