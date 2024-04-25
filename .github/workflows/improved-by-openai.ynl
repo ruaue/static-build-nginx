@@ -1,0 +1,51 @@
+name: Build and Release Nginx
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Set up Bash
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        
+    - name: Execute Nginx build script
+      run: |
+        set -eux  # Enable verbose output and exit on error
+
+        # Your nginx.sh script content here
+
+        # Extract Nginx version from the script
+        VER_NGINX=$(awk -F\" '/export VER_NGINX/ {print $2}' nginx.sh)
+
+    - name: Strip Nginx binary
+      run: strip /usr/sbin/nginx
+
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.build.outputs.nginx_version }}
+        release_name: Release ${{ steps.build.outputs.nginx_version }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Nginx binary
+      id: upload-release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: /usr/sbin/nginx
+        asset_name: nginx
+        asset_content_type: application/octet-stream
