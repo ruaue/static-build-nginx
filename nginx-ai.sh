@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Define dependency versions
-VER_NGINX="1.24.0"
+VER_NGINX="1.27.4"
 VER_LIBERSSL="3.9.1"
 VER_ZLIB="1.3.1"
 VER_PCRE="10.43"
