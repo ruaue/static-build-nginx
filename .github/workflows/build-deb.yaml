@@ -24,13 +24,13 @@ jobs:
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache bash curl alpine-sdk strip perl xz
+          apk add --no-cache bash curl alpine-sdk perl xz
           gem install fpm
 
       - name: Execute Nginx build script
         run: |
           set -eux
-          bash nginx-ai.sh
+          bash nginx.sh
         env:
           STAGING_DIR: ${{ github.workspace }}/staging
 
