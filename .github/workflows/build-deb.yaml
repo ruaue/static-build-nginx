@@ -1,5 +1,5 @@
 name: Build and Release Nginx deb package
-
+ 
 on:
   push:
     branches:
@@ -24,26 +24,26 @@ jobs:
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache bash curl alpine-sdk perl xz
+          apk add --no-cache bash curl alpine-sdk strip perl xz
           gem install fpm
 
       - name: Execute Nginx build script
         run: |
           set -eux
-          bash nginx.sh
+          bash nginx-ai.sh
         env:
           STAGING_DIR: ${{ github.workspace }}/staging
 
       - name: Debug staging directory
         run: |
           echo "STAGING_DIR contents:"
-          ls -la ${{ github.workspace }}/staging/usr/sbin || echo "Staging directory or usr/sbin is empty or missing"
+          ls -la ${{ github.workflow }}/staging/usr/sbin || echo "Staging directory or usr/sbin is empty or missing"
           echo "Container root /usr/sbin contents:"
           ls -la /usr/sbin/nginx || echo "No nginx binary in /usr/sbin"
 
       - name: Strip Nginx binary
         run: |
-          strip "${{ github/workspace }}/staging/usr/sbin/nginx" || echo "Strip failed, proceeding anyway"
+          strip "${{ github.workspace }}/staging/usr/sbin/nginx" || echo "Strip failed, proceeding anyway"
 
       - name: Package Nginx with FPM
         run: |
