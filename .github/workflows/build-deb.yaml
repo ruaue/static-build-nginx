@@ -1,4 +1,4 @@
-name: Build and Release Nginx deb package
+name: Build and Release Nginx
 
 on:
   push:
@@ -36,6 +36,13 @@ jobs:
           bash nginx.sh
         env:
           STAGING_DIR: ${{ github.workspace }}/staging
+
+      # Debug staging directory
+      - name: Debug staging directory
+        run: |
+          echo "STAGING_DIR contents:"
+          ls -la ${{ github.workspace }}/staging || echo "Staging directory is empty or missing"
+          find ${{ github.workspace }} -name nginx  # Search for the binary elsewhere
 
       # Strip Nginx binary
       - name: Strip Nginx binary
