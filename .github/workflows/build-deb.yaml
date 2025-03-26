@@ -1,4 +1,4 @@
-name: Build and Release Nginx
+name: Build and Release Nginx deb package
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache bash curl alpine-sdk strip
+          apk add --no-cache bash curl alpine-sdk 
           gem install fpm
 
       # Execute Nginx build script
