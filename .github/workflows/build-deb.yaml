@@ -3,9 +3,9 @@ name: Build and Release Nginx deb package
 on:
   push:
     branches:
-      - main  # Adjust as needed
+      - main
     tags:
-      - 'v*.*.*'  # Trigger on version tags (e.g., v1.0.0)
+      - 'v*.*.*'
   workflow_dispatch:
 
 jobs:
@@ -20,13 +20,13 @@ jobs:
     steps:
       # Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v4  # Updated to latest version
+        uses: actions/checkout@v4
 
-      # Install dependencies (bash, curl, build tools, and FPM)
+      # Install dependencies
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache bash curl alpine-sdk 
+          apk add --no-cache bash curl alpine-sdk strip perl xz
           gem install fpm
 
       # Execute Nginx build script
@@ -34,30 +34,30 @@ jobs:
         run: |
           set -eux
           bash nginx-ai.sh
-        # Assumption: nginx-ai.sh builds Nginx and places it in /usr/sbin/nginx
+        env:
+          STAGING_DIR: ${{ github.workspace }}/staging
 
       # Strip Nginx binary
       - name: Strip Nginx binary
         run: |
-          strip /usr/sbin/nginx || echo "Strip failed, proceeding anyway"
+          strip "${{ github.workspace }}/staging/usr/sbin/nginx" || echo "Strip failed, proceeding anyway"
 
-      # Package Nginx as a Debian package with FPM
+      # Package Nginx with FPM
       - name: Package Nginx with FPM
         run: |
-          mkdir -p package/usr/sbin
-          cp /usr/sbin/nginx package/usr/sbin/
           fpm -s dir -t deb \
             -n "nginx-custom" \
             -v "${{ github.ref_name }}" \
-            --description "Static Nginx build" \
+            --description "Custom Nginx build with LibreSSL and ngx-fancyindex" \
             --maintainer "Your Name <your.email@example.com>" \
             -a all \
-            -d "libc6" \
-            package/
+            -d "musl" \
+            --prefix / \
+            "${{ github.workspace }}/staging/"
 
       # Upload release
       - name: Upload release
-        if: startsWith(github.ref, 'refs/tags/')  # Only run on tags
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v0.1.15
         with:
           tag_name: ${{ github.ref_name }}
