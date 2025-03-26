@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache bash curl alpine-sdk perl xz
+          apk add --no-cache bash curl alpine-sdk strip perl xz
           gem install fpm
 
       # Execute Nginx build script
@@ -41,8 +41,9 @@ jobs:
       - name: Debug staging directory
         run: |
           echo "STAGING_DIR contents:"
-          ls -la ${{ github.workspace }}/staging || echo "Staging directory is empty or missing"
-          find ${{ github.workspace }} -name nginx  # Search for the binary elsewhere
+          ls -la ${{ github.workspace }}/staging/usr/sbin || echo "Staging directory or usr/sbin is empty or missing"
+          echo "Container root /usr/sbin contents:"
+          ls -la /usr/sbin/nginx || echo "No nginx binary in /usr/sbin"
 
       # Strip Nginx binary
       - name: Strip Nginx binary
