@@ -24,14 +24,14 @@ jobs:
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache bash curl alpine-sdk strip perl xz
+          apk add --no-cache bash curl alpine-sdk perl xz
           gem install fpm
 
       - name: Execute Nginx build script
         run: |
           set -eux
           export STAGING_DIR="$(pwd)/staging"
-          bash nginx-ai.sh
+          bash nginx.sh
         # Removed env block since $(pwd) doesn't expand here
 
       - name: Debug staging directory
