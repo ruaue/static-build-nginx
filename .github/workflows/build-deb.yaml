@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache bash curl alpine-sdk strip perl xz
+          apk add --no-cache bash curl alpine-sdk perl xz
           gem install fpm
 
       # Execute Nginx build script
