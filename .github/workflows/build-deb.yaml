@@ -1,5 +1,5 @@
 name: Build and Release Nginx deb package
- 
+
 on:
   push:
     branches:
@@ -37,7 +37,7 @@ jobs:
       - name: Debug staging directory
         run: |
           echo "STAGING_DIR contents:"
-          ls -la ${{ github.workflow }}/staging/usr/sbin || echo "Staging directory or usr/sbin is empty or missing"
+          ls -la "${{ github.workspace }}/staging/usr/sbin" || echo "Staging directory or usr/sbin is empty or missing"
           echo "Container root /usr/sbin contents:"
           ls -la /usr/sbin/nginx || echo "No nginx binary in /usr/sbin"
 
