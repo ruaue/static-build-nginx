@@ -23,6 +23,7 @@ STAGING_DIR="${STAGING_DIR:-/tmp/staging}"
 apk --update add "${PKG_BUILD[@]}"
 
 # Create staging directory with full path
+echo "Creating STAGING_DIR: $STAGING_DIR/usr/sbin"
 mkdir -p "$STAGING_DIR/usr/sbin" || { echo "Failed to create STAGING_DIR: $STAGING_DIR/usr/sbin"; exit 1; }
 echo "STAGING_DIR set to: $STAGING_DIR"
 
