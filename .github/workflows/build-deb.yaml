@@ -1,4 +1,4 @@
-name: Build and Release Nginx deb package
+name: Build and Release Nginx
 
 on:
   push:
@@ -24,26 +24,26 @@ jobs:
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache bash curl alpine-sdk perl xz
+          apk add --no-cache bash curl alpine-sdk strip perl xz
           gem install fpm
 
       - name: Execute Nginx build script
         run: |
           set -eux
-          bash nginx.sh
-        env:
-          STAGING_DIR: $(pwd)/staging
+          export STAGING_DIR="$(pwd)/staging"
+          bash nginx-ai.sh
+        # Removed env block since $(pwd) doesn't expand here
 
       - name: Debug staging directory
         run: |
           echo "STAGING_DIR contents:"
-          ls -la $(pwd)/staging/usr/sbin || echo "Staging directory or usr/sbin is empty or missing"
+          ls -la "$(pwd)/staging/usr/sbin" || echo "Staging directory or usr/sbin is empty or missing"
           echo "Container root /usr/sbin contents:"
           ls -la /usr/sbin/nginx || echo "No nginx binary in /usr/sbin"
 
       - name: Strip Nginx binary
         run: |
-          strip $(pwd)/staging/usr/sbin/nginx || echo "Strip failed, proceeding anyway"
+          strip "$(pwd)/staging/usr/sbin/nginx" || echo "Strip failed, proceeding anyway"
 
       - name: Package Nginx with FPM
         run: |
@@ -55,11 +55,11 @@ jobs:
             -a all \
             -d "musl" \
             --prefix / \
-            $(pwd)/staging/
+            "$(pwd)/staging/"
 
       - name: Upload release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v0.1.15
+        uses: actions/checkout@v0.1.15
         with:
           tag_name: ${{ github.ref_name }}
           files: |
