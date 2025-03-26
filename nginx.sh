@@ -24,6 +24,7 @@ apk --update add "${PKG_BUILD[@]}"
 
 # Create staging directory
 mkdir -p "$STAGING_DIR/usr/sbin" || { echo "Failed to create STAGING_DIR: $STAGING_DIR"; exit 1; }
+echo "STAGING_DIR set to: $STAGING_DIR"
 
 # Combine curl commands to download dependencies
 cd /tmp || exit
@@ -82,6 +83,7 @@ make || { echo "Make failed"; exit 1; }
 make install || { echo "Make install failed"; exit 1; }
 
 # Manually stage the binary
+echo "Copying /usr/sbin/nginx to $STAGING_DIR/usr/sbin/nginx"
 cp /usr/sbin/nginx "$STAGING_DIR/usr/sbin/nginx" || { echo "Failed to copy nginx to $STAGING_DIR/usr/sbin/nginx"; exit 1; }
 
 # Verify staging
