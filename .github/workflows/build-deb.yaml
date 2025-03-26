@@ -18,18 +18,15 @@ jobs:
       options: --privileged
 
     steps:
-      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install dependencies
       - name: Install dependencies
         run: |
           apk update
           apk add --no-cache bash curl alpine-sdk perl xz
           gem install fpm
 
-      # Execute Nginx build script
       - name: Execute Nginx build script
         run: |
           set -eux
@@ -37,7 +34,6 @@ jobs:
         env:
           STAGING_DIR: ${{ github.workspace }}/staging
 
-      # Debug staging directory
       - name: Debug staging directory
         run: |
           echo "STAGING_DIR contents:"
@@ -45,12 +41,10 @@ jobs:
           echo "Container root /usr/sbin contents:"
           ls -la /usr/sbin/nginx || echo "No nginx binary in /usr/sbin"
 
-      # Strip Nginx binary
       - name: Strip Nginx binary
         run: |
-          strip "${{ github.workspace }}/staging/usr/sbin/nginx" || echo "Strip failed, proceeding anyway"
+          strip "${{ github/workspace }}/staging/usr/sbin/nginx" || echo "Strip failed, proceeding anyway"
 
-      # Package Nginx with FPM
       - name: Package Nginx with FPM
         run: |
           fpm -s dir -t deb \
@@ -63,7 +57,6 @@ jobs:
             --prefix / \
             "${{ github.workspace }}/staging/"
 
-      # Upload release
       - name: Upload release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v0.1.15
