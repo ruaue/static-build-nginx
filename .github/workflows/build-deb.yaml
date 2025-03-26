@@ -32,18 +32,18 @@ jobs:
           set -eux
           bash nginx.sh
         env:
-          STAGING_DIR: ${{ github.workspace }}/staging
+          STAGING_DIR: $(pwd)/staging
 
       - name: Debug staging directory
         run: |
           echo "STAGING_DIR contents:"
-          ls -la "${{ github.workspace }}/staging/usr/sbin" || echo "Staging directory or usr/sbin is empty or missing"
+          ls -la $(pwd)/staging/usr/sbin || echo "Staging directory or usr/sbin is empty or missing"
           echo "Container root /usr/sbin contents:"
           ls -la /usr/sbin/nginx || echo "No nginx binary in /usr/sbin"
 
       - name: Strip Nginx binary
         run: |
-          strip "${{ github.workspace }}/staging/usr/sbin/nginx" || echo "Strip failed, proceeding anyway"
+          strip $(pwd)/staging/usr/sbin/nginx || echo "Strip failed, proceeding anyway"
 
       - name: Package Nginx with FPM
         run: |
@@ -55,7 +55,7 @@ jobs:
             -a all \
             -d "musl" \
             --prefix / \
-            "${{ github.workspace }}/staging/"
+            $(pwd)/staging/
 
       - name: Upload release
         if: startsWith(github.ref, 'refs/tags/')
