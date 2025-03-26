@@ -1,4 +1,4 @@
-name: Build and Release Nginx
+name: Build and Release Nginx deb package
 
 on:
   push:
