@@ -23,7 +23,7 @@ STAGING_DIR="${STAGING_DIR:-/tmp/staging}"
 apk --update add "${PKG_BUILD[@]}"
 
 # Create staging directory
-mkdir -p "$STAGING_DIR" || { echo "Failed to create STAGING_DIR: $STAGING_DIR"; exit 1; }
+mkdir -p "$STAGING_DIR/usr/sbin" || { echo "Failed to create STAGING_DIR: $STAGING_DIR"; exit 1; }
 
 # Combine curl commands to download dependencies
 cd /tmp || exit
@@ -79,10 +79,10 @@ cd "nginx-$VER_NGINX" || exit
     --with-cc-opt="-Os -fstack-protector-strong -DTCP_FASTOPEN=23" \
     --with-ld-opt="-Wl,-static -static -static-libgcc -no-pie"
 make || { echo "Make failed"; exit 1; }
-make install DESTDIR="$STAGING_DIR" || { echo "Make install failed"; exit 1; }
+make install || { echo "Make install failed"; exit 1; }
 
-# Verify installation
-ls -la "$STAGING_DIR/usr/sbin/nginx" || echo "Nginx binary not found in $STAGING_DIR/usr/sbin/nginx"
+# Manually stage the binary
+cp /usr/sbin/nginx "$STAGING_DIR/usr/sbin/nginx" || { echo "Failed to copy nginx to $STAGING_DIR/usr/sbin/nginx"; exit 1; }
 
-# Copy to container root for compatibility (optional)
-cp "$STAGING_DIR/usr/sbin/nginx" /usr/sbin/nginx || echo "Copy to /usr/sbin/nginx failed"
+# Verify staging
+ls -la "$STAGING_DIR/usr/sbin/nginx" || { echo "Nginx binary not found in $STAGING_DIR/usr/sbin/nginx"; exit 1; }
