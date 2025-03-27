@@ -23,7 +23,8 @@ git checkout "$VERSION"
 
 # Build with musl target
 RUSTFLAGS="-C target-feature=-crt-static -C link-self-contained=yes" \
-cargo build --target x86_64-unknown-linux-musl --bin=ssserver,ssservice --release --no-default-features --features="server stream-cipher mimalloc multi-threaded"
+cargo build --target x86_64-unknown-linux-musl --bin=ssserver --release --no-default-features --features="server stream-cipher mimalloc multi-threaded"
+cargo build --target x86_64-unknown-linux-musl --bin=ssservice --release --no-default-features
 
 # Copy binaries to repo's shadowsocks-rust-server/usr/bin/
 cp target/x86_64-unknown-linux-musl/release/ssserver "$STAGING_DIR/usr/bin/"
