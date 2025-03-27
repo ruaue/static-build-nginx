@@ -3,7 +3,7 @@ name: Build and Release shadowsocks-rust deb package
 on:
   push:
     branches:
-      - shadowsocks-rust-server
+      - shadowsocks-rust
     tags:
       - 'v*.*.*'
   workflow_dispatch:
