@@ -6,14 +6,20 @@ STAGING_DIR="${STAGING_DIR:-$(pwd)/shadowsocks-rust-server}"
 echo "STAGING_DIR set to: $STAGING_DIR"
 mkdir -p "$STAGING_DIR/usr/bin" "$STAGING_DIR/script"
 
-# Get version from GITHUB_REF_NAME, removing 'v' prefix if present
-VERSION="${GITHUB_REF_NAME#v}"
-echo "Building shadowsocks-rust version: $VERSION"
+# Use GITHUB_REF_NAME directly (e.g., v1.23.0)
+VERSION="$GITHUB_REF_NAME"
+echo "Requested shadowsocks-rust version: $VERSION"
 
 # Clone shadowsocks-rust
 git clone https://github.com/shadowsocks/shadowsocks-rust
 cd shadowsocks-rust
-git checkout "v$VERSION"
+
+# List available tags for debugging
+echo "Available tags in shadowsocks-rust:"
+git tag -l
+
+# Checkout the exact version
+git checkout "$VERSION"
 
 # Build with musl target
 RUSTFLAGS="-C target-feature=-crt-static -C link-self-contained=yes" \
