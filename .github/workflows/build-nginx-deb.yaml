@@ -1,4 +1,4 @@
-name: Build and Release Nginx deb package
+name: Build and Release shadowsocks-rust deb package
 
 on:
   push:
@@ -12,10 +12,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ruby:alpine
+      image: debian:bookworm
       env:
         TZ: Asia/Shanghai
-      options: --privileged
+        GITHUB_REF_NAME: ${{ github.ref_name }} # Pass ref_name to the container
 
     steps:
       - name: Checkout repository
@@ -23,39 +23,49 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apk update
-          apk add --no-cache bash curl alpine-sdk perl xz
+          apt update
+          apt install -y \
+            bash \
+            curl \
+            build-essential \
+            musl-dev \
+            git \
+            ruby \
+            ruby-dev \
+            perl \
+            xz-utils
           gem install fpm
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          . $HOME/.cargo/env
+          rustup target add x86_64-unknown-linux-musl
 
-      - name: Execute Nginx build script
+      - name: Make ss-rust.sh executable
         run: |
-          set -eux
-          export STAGING_DIR="$(pwd)/staging"
-          echo "STAGING_DIR set to: $STAGING_DIR"
-          bash nginx.sh
+          chmod +x ss-rust.sh
+
+      - name: Execute shadowsocks-rust build script
+        run: |
+          bash ss-rust.sh
 
       - name: Debug staging directory
         run: |
           echo "STAGING_DIR contents:"
-          ls -la "$(pwd)/staging/usr/sbin" || echo "Staging directory or usr/sbin is empty or missing"
-          echo "Container root /usr/sbin contents:"
-          ls -la /usr/sbin/nginx || echo "No nginx binary in /usr/sbin"
+          ls -la "$(pwd)/shadowsocks-rust-server/usr/bin" || echo "usr/bin is empty or missing"
+          ls -la "$(pwd)/shadowsocks-rust-server/script" || echo "script dir is empty or missing"
 
-      - name: Strip Nginx binary
+      - name: Package shadowsocks-rust with FPM
         run: |
-          strip "$(pwd)/staging/usr/sbin/nginx" || echo "Strip failed, proceeding anyway"
-
-      - name: Package Nginx with FPM
-        run: |
-          fpm -s dir -t deb \
-            -n "nginx-custom" \
+          fpm -s dir -C shadowsocks-rust-server -t deb \
+            -n "shadowsocks-rust-server" \
             -v "${{ github.ref_name }}" \
-            --description "Custom Nginx build with LibreSSL and ngx-fancyindex" \
-            --maintainer "Your Name <repo@tlle.eu.org>" \
-            -a all \
-            -d "musl" \
-            --prefix / \
-            "$(pwd)/staging/"
+            -a "amd64" \
+            -f \
+            --exclude 'script' \
+            --deb-systemd shadowsocks-rust-server/script/shadowsocks-rust.service \
+            --deb-systemd shadowsocks-rust-server/script/shadowsocks-rust-server@.service \
+            --deb-init shadowsocks-rust-server/script/shadowsocks-rust.init \
+            --deb-default shadows Knowlesocks-rust-server/script/shadowsocks-rust.default \
+            --after-install shadowsocks-rust-server/script/shadowsocks-rust.postinst
 
       - name: Upload release
         if: startsWith(github.ref, 'refs/tags/')
