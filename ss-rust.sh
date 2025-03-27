@@ -19,7 +19,7 @@ echo "Available tags in shadowsocks-rust:"
 git tag -l
 
 # Checkout the exact version
-git checkout "v$VERSION"
+git checkout v"$VERSION"
 
 # Build with musl target
 RUSTFLAGS="-C target-feature=-crt-static -C link-self-contained=yes" \
