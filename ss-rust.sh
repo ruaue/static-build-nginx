@@ -13,7 +13,7 @@ echo "Building shadowsocks-rust version: $VERSION"
 # Clone shadowsocks-rust
 git clone https://github.com/shadowsocks/shadowsocks-rust
 cd shadowsocks-rust
-git checkout "$VERSION"
+git checkout "v$VERSION"
 
 # Build with musl target
 RUSTFLAGS="-C target-feature=-crt-static -C link-self-contained=yes" \
