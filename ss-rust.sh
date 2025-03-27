@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eux
 
+# Load Rust environment
+. "$HOME/.cargo/env"
+
 # Set staging directory
 STAGING_DIR="${STAGING_DIR:-$(pwd)/shadowsocks-rust-server}"
 echo "STAGING_DIR set to: $STAGING_DIR"
