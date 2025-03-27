@@ -23,7 +23,7 @@ git checkout "$VERSION"
 
 # Build with musl target
 RUSTFLAGS="-C target-feature=-crt-static -C link-self-contained=yes" \
-cargo build --target x86_64-unknown-linux-musl --release
+cargo build --target x86_64-unknown-linux-musl --release --no-default-features --features server
 
 # Copy binaries to repo's shadowsocks-rust-server/usr/bin/
 cp target/x86_64-unknown-linux-musl/release/ssserver "$STAGING_DIR/usr/bin/"
