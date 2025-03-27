@@ -3,7 +3,7 @@ name: Build and Release shadowsocks-rust deb package
 on:
   push:
     branches:
-      - shadowsocks-rust
+      - main
     tags:
       - 'v*.*.*'
   workflow_dispatch:
@@ -12,10 +12,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: debian:bookworm
+      image: rust:alpine
       env:
         TZ: Asia/Shanghai
-        GITHUB_REF_NAME: ${{ github.ref_name }} # Pass ref_name to the container
+        GITHUB_REF_NAME: ${{ github.ref_name }}
 
     steps:
       - name: Checkout repository
@@ -23,20 +23,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt update
-          apt install -y \
+          apk update
+          apk add --no-cache \
             bash \
-            curl \
-            build-essential \
-            musl-dev \
             git \
             ruby \
             ruby-dev \
+            musl-dev \
+            build-base \
             perl \
-            xz-utils
+            xz
           gem install fpm
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          . $HOME/.cargo/env
           rustup target add x86_64-unknown-linux-musl
 
       - name: Make ss-rust.sh executable
@@ -64,7 +61,7 @@ jobs:
             --deb-systemd shadowsocks-rust-server/script/shadowsocks-rust.service \
             --deb-systemd shadowsocks-rust-server/script/shadowsocks-rust-server@.service \
             --deb-init shadowsocks-rust-server/script/shadowsocks-rust.init \
-            --deb-default shadows Knowlesocks-rust-server/script/shadowsocks-rust.default \
+            --deb-default shadowsocks-rust-server/script/shadowsocks-rust.default \
             --after-install shadowsocks-rust-server/script/shadowsocks-rust.postinst
 
       - name: Upload release
