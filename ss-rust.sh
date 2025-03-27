@@ -26,11 +26,13 @@ git checkout "$VERSION"
 
 # Build with musl target
 RUSTFLAGS="-C target-feature=-crt-static -C link-self-contained=yes" \
-cargo build --target x86_64-unknown-linux-musl --release
+cargo build --target  x86_64-unknown-linux-gnu --release
 
 # Stage the binary
-cp target/x86_64-unknown-linux-musl/release/ssserver "$STAGING_DIR/usr/bin/"
+cp target/ x86_64-unknown-linux-gnu/release/ssserver "$STAGING_DIR/usr/bin/"
+cp target/ x86_64-unknown-linux-gnu/release/ssservice "$STAGING_DIR/usr/bin/"
 strip "$STAGING_DIR/usr/bin/ssserver"
+strip "$STAGING_DIR/usr/bin/ssservice"
 
 # Stage script files (assuming they exist in the repo or need to be copied)
 cp script/shadowsocks-rust.service "$STAGING_DIR/script/" || echo "Service file not found"
